@@ -26,25 +26,35 @@ function retval = viewfreqresp (filename, sample_freq)
   Data = load(filename, "SOS");
   [b,a] = sos2tf(Data.SOS);
 
-  w = linspace(0, sample_freq/2, 512); # eje x
-  w_1 = 1./w; #
-  H = zeros(1, length(w)); # inicializa el vector de respuesta
-  numerator = polyval(flip(b), w_1);
-  denominator = polyval(flip(a), w_1);
-  H = numerator./denominator;
+  w = linspace(1, sample_freq/2, 512)./sample_freq; # eje x
+  H = zeros(0, length(w)); # inicializa el vector de respuesta
+  angles = zeros(0, length(w));
 
+  numerator = polyval(flip(b), exp(-1i * w));
+  denominator = polyval(flip(a), exp(-1i * w));
+
+  H = numerator ./ denominator;
+  for k= 1:length(H)
+    if angle(H(k)) > 0
+      angles(k) = angle(H(k))* 180/pi - 360;
+    else
+      angles(k) = angle(H(k))* 180/pi;
+    endif
+  endfor
+
+  figure(1)
   subplot(2, 1, 1);
-  plot(w, 20*log10(abs(H)));  % Magnitude in dB
+  semilogx(w.*sample_freq, 20*log10(abs(H)));
+  axis([0, sample_freq/2, -100, 70])
   title('Respuesta en magnitud');
-  xlabel('F');
+  xlabel('F(Hz)');
   ylabel('|H(F)|[dB]');
 
   subplot(2, 1, 2);
-  plot(w, angle(H));
+  semilogx(w.*sample_freq, angles);
+  axis([0, sample_freq/2, -360, 0])
   title('Respuesta de fase');
   xlabel('F');
   ylabel('\angle H(F) [\deg]');
-
-
 
 endfunction

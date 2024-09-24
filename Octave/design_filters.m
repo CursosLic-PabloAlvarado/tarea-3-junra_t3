@@ -22,10 +22,6 @@ f_Fsb_s = 1000;
 
 #frecuencia de muestreo y señales
 Fs = 48000;
-sf = 2000; 
-sf2 = sf/2;
-t = 0:1/sf:1;           % 1 second of time data
-signal = sin(2*pi*50*t) + sin(2*pi*800*t);  % Mix of 50 Hz and 200 Hz
 
 # ellip
 # Low Pass Filter
@@ -50,19 +46,19 @@ save("ellip_bandstop.mat", "SOS");
 
 
 # butter
-[b,a]=butter ( 3, f_Fpb / sf2, 'low'); # Low Pass Filter
+[b,a]=butter ( 3, f_Fpb / (Fs/2), 'low'); # Low Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("butter_lowpass.mat", "SOS");
 
-[b,a]=butter ( 3, f_Fpa / sf2, 'high');# High Pass Filter
+[b,a]=butter ( 3, f_Fpa / (Fs/2), 'high');# High Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("butter_highpass.mat", "SOS");
 
-[b,a]=butter ( 3, [f_Fpb_i/sf2, f_Fpb_s/sf2], 'bandpass');# Band Pass Filter
+[b,a]=butter ( 3, [f_Fpb_i/(Fs/2), f_Fpb_s/(Fs/2)], 'bandpass');# Band Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("butter_bandpass.mat", "SOS");
 
-[b,a]=butter ( 3, [f_Fsb_i/sf2, f_Fsb_s/sf2], 'stop');# Band Reject Reject
+[b,a]=butter ( 3, [f_Fsb_i/(Fs/2), f_Fsb_s/(Fs/2)], 'stop');# Band Reject Reject
 [SOS, g] = tf2sos(b, a);
 save("butter_bandstop.mat", "SOS");
 
@@ -70,7 +66,7 @@ save("butter_bandstop.mat", "SOS");
 # Low Pass Filter
 [b, a] = cheby1 (order, r_bp, f_Fpb/(Fs/2));
 [SOS, g] = tf2sos(b, a);
-save("chevy1_lowpass.mat", "SOS");
+save("cheby1_lowpass.mat", "SOS");
 
 # High Pass Filter
 [b, a] = cheby1 (order, r_bp, f_Fpa/(Fs/2), 'high');
@@ -89,18 +85,18 @@ save("cheby1_bandstop.mat", "SOS");
 
 
 # cheby2
-[b, a] = cheby2(3, 50, f_Fpb/sf2, 'low'); # Low Pass Filter
+[b, a] = cheby2(3, 50, f_Fpb/(Fs/2), 'low'); # Low Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("cheby2_lowpass.mat", "SOS");
 
-[b, a] = cheby2(3, 50, f_Fpa/sf2, 'high');# High Pass Filter
+[b, a] = cheby2(3, 50, f_Fpa/(Fs/2), 'high');# High Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("cheby2_highpass.mat", "SOS");
 
-[b, a] = cheby2(3, 50, [f_Fpb_i/sf2 f_Fpb_s/sf2]);# Band Pass Filter
+[b, a] = cheby2(3, 50, [f_Fpb_i/(Fs/2) f_Fpb_s/(Fs/2)]);# Band Pass Filter
 [SOS, g] = tf2sos(b, a);
 save("cheby2_bandpass.mat", "SOS");
 
-[b, a] = cheby2(3, 50, [f_Fsb_i/sf2 f_Fsb_s/sf2], 'stop');# Band Reject Reject
+[b, a] = cheby2(3, 50, [f_Fsb_i/(Fs/2) f_Fsb_s/(Fs/2)], 'stop');# Band Reject Reject
 [SOS, g] = tf2sos(b, a);
 save("cheby2_bandstop.mat", "SOS");
