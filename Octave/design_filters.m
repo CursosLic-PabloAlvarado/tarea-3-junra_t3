@@ -6,6 +6,8 @@
 
 pkg load signal;
 
+order = 3;
+
 # dB
 r_bp = 1;
 a_br = 50;
@@ -19,18 +21,32 @@ f_Fsb_i = 220;
 f_Fsb_s = 1000;
 
 #frecuencia de muestreo y señales
-sf = 2000; sf2 = sf/2;
+Fs = 48000;
+sf = 2000; 
+sf2 = sf/2;
 t = 0:1/sf:1;           % 1 second of time data
 signal = sin(2*pi*50*t) + sin(2*pi*800*t);  % Mix of 50 Hz and 200 Hz
 
 # ellip
 # Low Pass Filter
+[b, a] = ellip (order, r_bp, a_br, f_Fpb/(Fs/2));
+[SOS, g] = tf2sos(b, a);
+save("ellip_lowpass.mat", "SOS");
 
 # High Pass Filter
+[b, a] = ellip (order, r_bp, a_br, f_Fpa/(Fs/2), 'high');
+[SOS, g] = tf2sos(b, a);
+save("ellip_highpass.mat", "SOS");
 
 # Band Pass Filter
+[b, a] = ellip (order, r_bp, a_br, [f_Fpb_i f_Fpb_s]/(Fs/2));
+[SOS, g] = tf2sos(b, a);
+save("ellip_bandpass.mat", "SOS");
 
 # Band Reject Reject
+[b, a] = ellip (order, r_bp, a_br, [f_Fsb_i f_Fsb_s]/(Fs/2), 'stop');
+[SOS, g] = tf2sos(b, a);
+save("ellip_bandstop.mat", "SOS");
 
 
 # butter
@@ -52,12 +68,24 @@ save("butter_bandstop.mat", "SOS");
 
 # cheby1
 # Low Pass Filter
+[b, a] = cheby1 (order, r_bp, f_Fpb/(Fs/2));
+[SOS, g] = tf2sos(b, a);
+save("chevy1_lowpass.mat", "SOS");
 
 # High Pass Filter
+[b, a] = cheby1 (order, r_bp, f_Fpa/(Fs/2), 'high');
+[SOS, g] = tf2sos(b, a);
+save("cheby1_highpass.mat", "SOS");
 
 # Band Pass Filter
+[b, a] = cheby1 (order, r_bp, [f_Fpb_i f_Fpb_s]/(Fs/2));
+[SOS, g] = tf2sos(b, a);
+save("cheby1_bandpass.mat", "SOS");
 
 # Band Reject Reject
+[b, a] = cheby1 (order, r_bp, [f_Fsb_i f_Fsb_s]/(Fs/2), 'stop');
+[SOS, g] = tf2sos(b, a);
+save("cheby1_bandstop.mat", "SOS");
 
 
 # cheby2
