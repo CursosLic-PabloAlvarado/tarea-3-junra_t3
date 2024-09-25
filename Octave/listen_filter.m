@@ -24,9 +24,9 @@
 
 function listen_filter(filter_file, audio_file, fs_target = 48000)
 
-    data = load(filter_file, "SOS");
+    data = load(filter_file, "SOS", "g");
 
-    [b, a] = sos2tf(data.SOS);
+    [b, a] = sos2tf(data.SOS, data.g);
 
     [y, fs_audio] = audioread(audio_file);
 
@@ -38,4 +38,8 @@ function listen_filter(filter_file, audio_file, fs_target = 48000)
     y_filtered = filter(b, a, y);
 
     sound(y_filtered, fs_target);
+    
+    # pkg load signal;
+    # listen_filter("ellip_lowpass.mat", "../clips/frequency_sweep.wav")
+
 endfunction
