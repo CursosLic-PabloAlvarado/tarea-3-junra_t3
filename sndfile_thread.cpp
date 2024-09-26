@@ -303,7 +303,7 @@ void sndfile_thread::read_block(file_block& block) {
     
     // how many of "our" samples does cnt equate to?
     std::size_t jack_samples =
-      std::min(block.size(),cnt*_sampling_rate/_current_file_sample_rate);
+      std::min(block.size(),std::size_t(cnt)*(_sampling_rate/_current_file_sample_rate));
     auto it = block.begin();
     const auto eit = it+jack_samples;
     
