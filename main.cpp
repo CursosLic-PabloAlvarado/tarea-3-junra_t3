@@ -71,12 +71,33 @@ void signal_handler(int signal) {
   }
 }
 
+template <typename T>
+void set_filter_coefs(std::vector<std::vector<T>>& filter_coefs) {
+
+    if (filter_coefs.empty()) return;
+
+    T g = filter_coefs.back().back();
+
+    for (size_t i = 0; i < filter_coefs.size() - 1; ++i) {
+        for (size_t j = 0; j < 3; ++j) {
+            filter_coefs[i][j] *= g;
+        }
+    }
+    
+    filter_coefs.pop_back();
+}
+
 int main (int argc, char *argv[])
 {
   std::signal(SIGINT,signal_handler);
+  int *temp_dir;
+  int *temp_order;
 
   
   try {
+	  
+	temp_dir = new int(112);
+		
     static filter_client client;
 
     typedef jack::client::sample_t sample_t;
@@ -119,13 +140,32 @@ int main (int argc, char *argv[])
 
     if (vm.count("coeffs")) {
       filter_coefs = parse_filter<sample_t>(filter_file);
+      
+      set_filter_coefs(filter_coefs);
+      
+      temp_order = new int(4); // filter_coefs.size()
+      
       std::cout << filter_coefs.size() << " 2nd order filter read from "
-                << filter_file;
+                << filter_file
+                << std::endl;
+                
+      std::cout << "Data" << std::endl;
+      
+      for (const auto&  innerVec : filter_coefs){
+		  for (const auto& item : innerVec) {
+			  std::cout << item << "  ";
+		  }
+		  std::cout  << std::endl;
+	  }
+      
+      std::cout << "" << std::endl;
+      
     }
     
     if (client.init() != jack::client_state::Running) {
       throw std::runtime_error("Could not initialize the JACK client");
     }
+    client.set(temp_dir, temp_order);
 
     // keep running until stopped by the user
     std::cout << "Press x key to exit" << std::endl;
@@ -136,34 +176,42 @@ int main (int argc, char *argv[])
       key = waitkey(100);
       if (key>0) {
         switch(key) {
-        case 'x': {
-          go_away=true;
-          std::cout << "Finishing..." << std::endl;
-        } break;
-        case 'r': {
+			case 'x': {
+			  go_away=true;
+			  std::cout << "Finishing..." << std::endl;
+			} break;
+			case 'p': {
+				*temp_dir = 112;
+			  std::cout << "Passthrough" << std::endl;
+			} break;
+			case 'c': {
+				*temp_dir = 99;
+			  std::cout << "Cascade" << std::endl;
+			} break;
+			case 'r': {
 
-          if (vm.count("files")) {
-            const std::vector< std::filesystem::path >&
-              audio_files =
-              vm["files"].as< std::vector<std::filesystem::path> >();
-            
-            for (const auto& f : audio_files) {
-              bool ok =client.add_file(f);
-              std::cout << "  Re-adding file '" << f.c_str() << "' "
-                        << (ok ? "succedded" : "failed") << std::endl;
-            }
-          }
-          
-          std::cout << "Repeat playing files" << std::endl;
-        } break;
-        default: {
-          if (key>32) {
-            std::cout << "Key " << char(key) << " pressed" << std::endl;
-          } else {
-            std::cout << "Key " << key << " pressed" << std::endl;
-          }
-          key=-1;
-        }
+			  if (vm.count("files")) {
+				const std::vector< std::filesystem::path >&
+				  audio_files =
+				  vm["files"].as< std::vector<std::filesystem::path> >();
+				
+				for (const auto& f : audio_files) {
+				  bool ok =client.add_file(f);
+				  std::cout << "  Re-adding file '" << f.c_str() << "' "
+							<< (ok ? "succedded" : "failed") << std::endl;
+				}
+			  }
+			  
+			  std::cout << "Repeat playing files" << std::endl;
+			} break;
+			default: {
+			  if (key>32) {
+				std::cout << "Key " << char(key) << " pressed" << std::endl;
+			  } else {
+				std::cout << "Key " << key << " pressed" << std::endl;
+			  }
+			  key=-1;
+			}
         } // switch key
       } // if (key>0)
     } // end while

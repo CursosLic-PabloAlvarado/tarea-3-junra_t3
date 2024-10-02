@@ -57,8 +57,34 @@ bool filter_client::process(jack_nframes_t nframes,
                                  const sample_t *const in,
                                  sample_t *const out){
   
-  
-  memcpy (out, in, sizeof(sample_t)*nframes);
+  if (dir == 'c'){
+	  if (order == 2){
+		/**
+		 * Cascade orden 2
+		 */
+	  }
+	  else if (order == 3){
+		/**
+		 * Cascade orden 3
+		 */
+	  }
+	  else {
+		/**
+		 * Passthrough
+		 */
+		memcpy (out, in, sizeof(sample_t)*nframes);
+	  }
+  }
+  else if (dir == 'p'){
+	  /**
+	   * Biquad de pueba
+	   */
+  }
   return true;
+}
+
+void dsp_client::set(int *temp_dir,int *temp_order){
+	dir = temp_dir;
+	order = temp_order;
 }
   

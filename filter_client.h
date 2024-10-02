@@ -64,8 +64,12 @@ public:
   virtual bool process(jack_nframes_t nframes,
                        const sample_t *const in,
                        sample_t *const out) override;
+                       
+  void set(int *temp_dir, int *temp_order);
   
 private:
+  int *dir;
+  int *order;
   cascade<2> cascade_filter;
 
 };
