@@ -39,12 +39,13 @@
 
 #include <cstring>
 
-filter_client::filter_client() : jack::client() {
+filter_client::filter_client(int *dir):dir(dir)
+{
+	filter_type = None;
 }
 
-filter_client::~filter_client() {
-}
-  
+filter_client::~filter_client() {}
+
 /**
  * The process callback for this JACK application is called in a
  * special realtime thread once for each audio cycle.
@@ -53,38 +54,48 @@ filter_client::~filter_client() {
  * port to its output port. It will exit when stopped by 
    * the user (e.g. using Ctrl-C on a unix-ish operating system)
    */
-bool filter_client::process(jack_nframes_t nframes,
-                                 const sample_t *const in,
-                                 sample_t *const out){
-  
-  if (dir == 'c'){
-	  if (order == 2){
+bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sample_t *const out){
+
+  	const sample_t *const end_ptr = in+nframes;
+	const sample_t *ptr = in;
+	sample_t *optr = out;
+
+	if (*dir == 'c'){
+		switch (filter_type){
+			case TWO:
+				while(ptr != end_ptr){
+					*optr++ = cascade_single.process<3>(*ptr++);
+				}
+				break;
+			case THREE:
+				while(ptr != end_ptr){
+					*optr++ = cascade_band.process<3>(*ptr++);
+				}
+				break;
+			case None:
+				memcpy (out, in, sizeof(sample_t)*nframes);
+				break;
+			default:
+				break;
+		}
+		
+		
+	} else if (*dir == 'p'){
 		/**
-		 * Cascade orden 2
+		 * Biquad de pueba
 		 */
-	  }
-	  else if (order == 3){
-		/**
-		 * Cascade orden 3
-		 */
-	  }
-	  else {
-		/**
-		 * Passthrough
-		 */
-		memcpy (out, in, sizeof(sample_t)*nframes);
-	  }
-  }
-  else if (dir == 'p'){
-	  /**
-	   * Biquad de pueba
-	   */
-  }
-  return true;
+	}
+	return true;
 }
 
-void dsp_client::set(int *temp_dir,int *temp_order){
-	dir = temp_dir;
-	order = temp_order;
+void filter_client::set(std::vector<std::array<sample_t, 6>> &coefficients){
+	if (coefficients.size() == 2){
+		filter_type = TWO;
+		cascade_single.set_biquads(coefficients);
+	}else if (coefficients.size() == 3){
+		filter_type = THREE;
+		cascade_band.set_biquads(coefficients);
+	}else{
+		return;
+	}
 }
-  

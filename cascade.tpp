@@ -1,12 +1,9 @@
 template <unsigned int N>
-cascade<N>::cascade()
-{
-    nbiquads = N;
-}
+cascade<N>::cascade(){}
 
 template<unsigned int N>
 template<unsigned int I>
-cascade<T>::sample_t cascade<T>::process(const sample_t in){
+inline typename cascade<N>::sample_t cascade<N>::process(sample_t in){
     if constexpr (I < N){
         return process<I+1>(biquads[I].process(in));
     }else{
@@ -15,10 +12,9 @@ cascade<T>::sample_t cascade<T>::process(const sample_t in){
 }
 
 template<unsigned int N>
-void cascade<N>::set_biquads(const std::array<std::array<float, 6>, N> sosmatrix){
+void cascade<N>::set_biquads(const std::vector<std::array<sample_t, 6>> sosmatrix){
     for(size_t i=0; i<N; i++){
-        biquad bq = biquad(sosmatrix[i])
-        biquads[i] = bq;
+        biquads[i].set_coefficients(sosmatrix[i]);
     }
 }
 

@@ -49,30 +49,33 @@
  */
 class filter_client : public jack::client {
     
-public:
-  // typedef jack::client::sample_t sample_t;
-  
-  /**
-   * The default constructor performs some basic connections.
-   */
-  filter_client();
-  ~filter_client();
+  public:
+    enum FilterType {TWO, THREE, None};
+    typedef jack::client::sample_t sample_t;
+    
+    /**
+     * The default constructor performs some basic connections.
+     */
+    filter_client(int* dir);
+    ~filter_client();
 
-  /**
-   * Passthrough functionality
-   */
-  virtual bool process(jack_nframes_t nframes,
-                       const sample_t *const in,
-                       sample_t *const out) override;
-                       
-  void set(int *temp_dir, int *temp_order);
-  
-private:
-  int *dir;
-  int *order;
-  cascade<2> cascade_filter;
+    /**
+     * Passthrough functionality
+     */
+    virtual bool process(jack_nframes_t nframes,
+                        const sample_t *const in,
+                        sample_t *const out) override;
+                        
+    void set(std::vector<std::array<sample_t, 6>> &coefficients);
+    
+  private:
+    int *dir;
+    FilterType filter_type;
+    cascade<2> cascade_single;
+    cascade<3> cascade_band;
 
 };
+
 
 
 #endif

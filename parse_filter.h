@@ -45,28 +45,50 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
-template <typename T>
-std::vector< std::vector<T> > parse_filter(const std::string& filename) {
-  std::vector< std::vector<T> > sos_matrix;
+template <typename T, std::size_t N>
+std::vector< std::array<T, N> > parse_filter(const std::string& filename) {
+  std::vector< std::array<T, N> > sos_matrix;
   std::ifstream file(filename);
   std::string line;
+  T gain = 1.0;
 
   std::locale::global(std::locale::classic()); // Force "C" locale globally
+
+  
   
   while (std::getline(file, line)) {
     if (line.empty() || line[0] == '#') {
       continue;  // Skip comments and empty lines
     }
+
+    std::array<T, N> row;
+    std::size_t index = 0;
     
     boost::char_separator<char> sep(" \t");
     boost::tokenizer< boost::char_separator<char> > tok(line,sep);
-    std::vector<T> row;
     
     for (const auto& token : tok) {
-      row.push_back(boost::lexical_cast<T>(token));
+      if (index >= N) {
+        throw std::runtime_error("mas datos de los esperados");
+      }
+      row[index] = boost::lexical_cast<T>(token);
+      ++index;
+
+    }
+    if (index == 1) {
+        gain = row[0];
+    } else if (index == N) {
+        sos_matrix.push_back(row);
+    } else {
+        throw std::runtime_error("numero de valores inesperados");
     }
         
-    sos_matrix.push_back(std::move(row));
+  }
+
+  for (size_t i = 0; i < sos_matrix.size() - 1; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+          sos_matrix[i][j] *= gain;
+      }
   }
     
   return sos_matrix;

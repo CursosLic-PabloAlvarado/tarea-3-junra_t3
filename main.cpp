@@ -42,19 +42,15 @@
  */
 
 #include <cstdlib>
-
 #include <iostream>
 #include <stdexcept>
 #include <filesystem>
 #include <vector>
-
 #include <csignal>
-
 #include <boost/program_options.hpp>
 
 #include "waitkey.h"
 #include "filter_client.h"
-
 #include "parse_filter.h"
 
 namespace po=boost::program_options;
@@ -71,40 +67,20 @@ void signal_handler(int signal) {
   }
 }
 
-template <typename T>
-void set_filter_coefs(std::vector<std::vector<T>>& filter_coefs) {
-
-    if (filter_coefs.empty()) return;
-
-    T g = filter_coefs.back().back();
-
-    for (size_t i = 0; i < filter_coefs.size() - 1; ++i) {
-        for (size_t j = 0; j < 3; ++j) {
-            filter_coefs[i][j] *= g;
-        }
-    }
-    
-    filter_coefs.pop_back();
-}
 
 int main (int argc, char *argv[])
 {
   std::signal(SIGINT,signal_handler);
   int *temp_dir;
-  int *temp_order;
-
-  
   try {
 	  
-	temp_dir = new int(112);
-		
-    static filter_client client;
-
+	  temp_dir = new int(112);
+    static filter_client client(temp_dir);
     typedef jack::client::sample_t sample_t;
     
     // Filter coefficients
     std::string filter_file;
-    std::vector< std::vector< sample_t > > filter_coefs;
+    //std::vector< std::vector< sample_t > > filter_coefs;
     
     // Parse options from the command line
     po::options_description desc("Allowed options");
@@ -139,11 +115,8 @@ int main (int argc, char *argv[])
     }
 
     if (vm.count("coeffs")) {
-      filter_coefs = parse_filter<sample_t>(filter_file);
-      
-      set_filter_coefs(filter_coefs);
-      
-      temp_order = new int(4); // filter_coefs.size()
+      std::vector<std::array<sample_t, 6>> filter_coefs = parse_filter<sample_t, 6>(filter_file);
+      client.set(filter_coefs);
       
       std::cout << filter_coefs.size() << " 2nd order filter read from "
                 << filter_file
@@ -165,7 +138,6 @@ int main (int argc, char *argv[])
     if (client.init() != jack::client_state::Running) {
       throw std::runtime_error("Could not initialize the JACK client");
     }
-    client.set(temp_dir, temp_order);
 
     // keep running until stopped by the user
     std::cout << "Press x key to exit" << std::endl;
