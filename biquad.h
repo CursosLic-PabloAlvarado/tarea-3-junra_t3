@@ -5,23 +5,23 @@
 #include "jack_client.h"
 #include "array"
 
-template<int Order>
 class biquad {
+    typedef jack::client::sample_t sample_t;
     private:
-        double b0, b1, b2;
-        double a0, a1, a2;
-        double x1, x2;
-        double y1, y2;
+        sample_t b0, b1, b2;
+        sample_t a0, a1, a2;
+        sample_t x1, x2;
+        sample_t y1, y2;
 
 
     public:
-		typedef jack::client::sample_t sample_t;
+		
 
         biquad();
 
         ~biquad();
 
-        void set_coefficients(const std::array<sample_t, Order>& coeffs);
+        void set_coefficients(const std::array<sample_t, 6>& coeffs);
         sample_t process(const sample_t in);
 
 

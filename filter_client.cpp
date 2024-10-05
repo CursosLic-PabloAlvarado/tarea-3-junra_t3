@@ -43,6 +43,10 @@
 filter_client::filter_client(int *dir):dir(dir)
 {
 	filter_type = None;
+	prueba.set_coefficients(std::array<sample_t, 6>{
+      1, -1.9962282681026606, 1.0000000006886136,
+      1,-1.9902746344470237,0.99111829673050256
+    });
 }
 
 filter_client::~filter_client() {}
@@ -65,12 +69,12 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sa
 		switch (filter_type){
 			case TWO:
 				while(ptr != end_ptr){
-					*optr++ = cascade_single.process<3>(*ptr++);
+					*optr++ = cascade_single.process<0>(*ptr++);
 				}
 				break;
 			case THREE:
 				while(ptr != end_ptr){
-					*optr++ = cascade_band.process<3>(*ptr++);
+					*optr++ = cascade_band.process<0>(*ptr++);
 				}
 				break;
 			case None:
@@ -82,21 +86,23 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sa
 		
 		
 	} else if (*dir == 'p'){
-		/**
-		 * Biquad de pueba
-		 */
+		while(ptr != end_ptr){
+			*optr++ = prueba.process(*ptr++);
+		}
 	}
 	return true;
 }
 
-void filter_client::set(std::vector<std::array<sample_t, 6>> &coefficients){
+bool filter_client::set(std::vector<std::array<sample_t, 6>> &coefficients){
 	if (coefficients.size() == 2){
 		filter_type = TWO;
 		cascade_single.set_biquads(coefficients);
+		return true;
 	}else if (coefficients.size() == 3){
 		filter_type = THREE;
 		cascade_band.set_biquads(coefficients);
+		return true;
 	}else{
-		return;
+		return false;
 	}
 }

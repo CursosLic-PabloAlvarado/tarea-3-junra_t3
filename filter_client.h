@@ -66,13 +66,14 @@ class filter_client : public jack::client {
                         const sample_t *const in,
                         sample_t *const out) override;
                         
-    void set(std::vector<std::array<sample_t, 6>> &coefficients);
+    bool set(std::vector<std::array<sample_t, 6>> &coefficients);
     
   private:
     int *dir;
     FilterType filter_type;
     cascade<2> cascade_single;
     cascade<3> cascade_band;
+    biquad prueba;
 
 };
 

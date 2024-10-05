@@ -6,12 +6,13 @@
 template<unsigned int N>
 class cascade{
     private:
-        std::array<biquad<6>, N> biquads;
+        std::array<biquad, N> biquads;
 
     public:
         typedef jack::client::sample_t sample_t;
 
         cascade();
+        ~cascade();
         
         void set_biquads(const std::vector<std::array<sample_t, 6>> sosmatrix);
 

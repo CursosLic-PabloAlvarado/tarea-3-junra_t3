@@ -116,22 +116,8 @@ int main (int argc, char *argv[])
 
     if (vm.count("coeffs")) {
       std::vector<std::array<sample_t, 6>> filter_coefs = parse_filter<sample_t, 6>(filter_file);
-      client.set(filter_coefs);
-      
-      std::cout << filter_coefs.size() << " 2nd order filter read from "
-                << filter_file
-                << std::endl;
-                
-      std::cout << "Data" << std::endl;
-      
-      for (const auto&  innerVec : filter_coefs){
-		  for (const auto& item : innerVec) {
-			  std::cout << item << "  ";
-		  }
-		  std::cout  << std::endl;
-	  }
-      
-      std::cout << "" << std::endl;
+      bool ok = client.set(filter_coefs);
+      std::cout << "Setting up filter coefficients " << (ok ? "succedded" : "failed") << std::endl;
       
     }
     
