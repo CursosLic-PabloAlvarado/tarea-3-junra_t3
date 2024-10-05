@@ -1,3 +1,5 @@
+#include "biquad.h"
+
 template <int Order>
 biquad<Order>::biquad(){
     b0 = 1.0;
@@ -38,3 +40,5 @@ inline typename biquad<Order>::sample_t biquad<Order>::process(const sample_t in
 
   return output;
 }
+
+template class biquad<6>;

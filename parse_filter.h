@@ -85,6 +85,8 @@ std::vector< std::array<T, N> > parse_filter(const std::string& filename) {
         
   }
 
+  std::cout << sos_matrix.size() << std::endl;
+
   for (size_t i = 0; i < sos_matrix.size() - 1; ++i) {
       for (size_t j = 0; j < 3; ++j) {
           sos_matrix[i][j] *= gain;

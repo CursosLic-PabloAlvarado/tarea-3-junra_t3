@@ -26,7 +26,6 @@ class biquad {
 
 
 };
-#include "biquad.tpp"
 
 #endif
 

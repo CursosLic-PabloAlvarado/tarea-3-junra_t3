@@ -38,6 +38,7 @@
 #include "filter_client.h"
 
 #include <cstring>
+#include <iostream>
 
 filter_client::filter_client(int *dir):dir(dir)
 {
