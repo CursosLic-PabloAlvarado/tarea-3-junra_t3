@@ -77,7 +77,7 @@ static void BM_Biquad_Process(benchmark::State& state) {
 BENCHMARK(BM_Biquad_Process)->RangeMultiplier(2)->Range(256, 8<<10);
 
 
-/*static void BM_Cascade_Process(benchmark::State& state) {
+static void BM_Cascade_Process(benchmark::State& state) {
   typedef jack::client::sample_t sample_t;
   
   cascade<3> dut;
@@ -92,10 +92,12 @@ BENCHMARK(BM_Biquad_Process)->RangeMultiplier(2)->Range(256, 8<<10);
   int size = state.range(0);
 
   sample_t input[size];
-  sample_t output[size];
+  //sample_t output[size];
 
   for (auto _ : state) {
-    dut.process(size, input, output);
+	  for (int i = 0; i < size; ++i){
+		dut.process<0>(input[i]);
+	  }
   }
   
   state.SetItemsProcessed(size);  // Optional: Report number of items processed
@@ -103,6 +105,6 @@ BENCHMARK(BM_Biquad_Process)->RangeMultiplier(2)->Range(256, 8<<10);
 }
 
 // Vary array size from 8 to 8192
-BENCHMARK(BM_Cascade_Process)->RangeMultiplier(2)->Range(256, 8<<10); */
+BENCHMARK(BM_Cascade_Process)->RangeMultiplier(2)->Range(256, 8<<10);
 
 BENCHMARK_MAIN(); 
