@@ -52,7 +52,7 @@
 static void BM_Biquad_Process(benchmark::State& state) {
   typedef jack::client::sample_t sample_t;
   
-  biquad<6> dut;
+  biquad dut;
   
   dut.set_coefficients(std::array<sample_t, 6>{
       1, -1.9962282681026606, 1.0000000006886136,
