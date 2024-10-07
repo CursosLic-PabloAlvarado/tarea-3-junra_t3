@@ -74,7 +74,8 @@ int main (int argc, char *argv[])
   int *temp_dir;
   try {
 	  
-	  temp_dir = new int(112);
+	std::cout << "Prueba" << std::endl;
+	temp_dir = new int(112);
     static filter_client client(temp_dir);
     typedef jack::client::sample_t sample_t;
     
@@ -140,7 +141,7 @@ int main (int argc, char *argv[])
 			} break;
 			case 'p': {
 				*temp_dir = 112;
-			  std::cout << "Passthrough" << std::endl;
+			  std::cout << "Prueba" << std::endl;
 			} break;
 			case 'c': {
 				*temp_dir = 99;

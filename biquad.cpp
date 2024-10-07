@@ -1,5 +1,4 @@
 #include "biquad.h"
-#include <iostream>
 
 biquad::biquad(){
     b0 = 1.0;
