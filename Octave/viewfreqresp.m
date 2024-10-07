@@ -58,4 +58,10 @@ function retval = viewfreqresp (filename, sample_freq)
   xlabel('F');
   ylabel('\angle H(F) [\deg]');
 
+  figure(2)
+  zplane(b,a)
+  title('Diagrama de Polos')
+  ylabel('Im\{z\}')
+  xlabel('Re\{z\}')
+
 endfunction
