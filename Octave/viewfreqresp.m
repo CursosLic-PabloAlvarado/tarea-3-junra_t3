@@ -22,11 +22,11 @@
 ## Author: Juan Pablo Rodriguez <juanpablorodriguez@Juans-Air>
 ## Created: 2024-09-21
 
-function retval = viewfreqresp (filename, sample_freq)
-  Data = load(filename, "SOS", "g");
-  [b,a] = sos2tf(Data.SOS, Data.g);
+function retval = viewfreqresp (filename, sample_freq=48000)
+  Data = load(filename, "SOS");
+  [b,a] = sos2tf(Data.SOS);
 
-  w = linspace(0, sample_freq/2, 512)./sample_freq; # eje x
+  w = linspace(1, sample_freq/2, 512)./sample_freq; # eje x
   H = zeros(1, length(w)); # inicializa el vector de respuesta
   angles = zeros(1, length(w));
 
@@ -46,14 +46,14 @@ function retval = viewfreqresp (filename, sample_freq)
   figure(1)
   subplot(2, 1, 1);
   semilogx(w.*sample_freq, 20*log10(abs(H)));
-  axis([0, sample_freq/2, -50, 5])
+  axis([1, sample_freq/2, -70, 5])
   title('Respuesta en magnitud');
   xlabel('F(Hz)');
   ylabel('|H(F)|[dB]');
 
   subplot(2, 1, 2);
   semilogx(w.*sample_freq, angles);
-  axis([0, sample_freq/2, -360, 0])
+  axis([1, sample_freq/2, -360, 0])
   title('Respuesta de fase');
   xlabel('F');
   ylabel('\angle H(F) [\deg]');

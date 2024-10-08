@@ -50,7 +50,6 @@ std::vector< std::array<T, N> > parse_filter(const std::string& filename) {
   std::vector< std::array<T, N> > sos_matrix;
   std::ifstream file(filename);
   std::string line;
-  T gain = 1.0;
 
   std::locale::global(std::locale::classic()); // Force "C" locale globally
 
@@ -72,23 +71,10 @@ std::vector< std::array<T, N> > parse_filter(const std::string& filename) {
         throw std::runtime_error("mas datos de los esperados");
       }
       row[index] = boost::lexical_cast<T>(token);
+      sos_matrix.push_back(row);
       ++index;
 
-    }
-    if (index == 1) {
-        gain = row[0];
-    } else if (index == N) {
-        sos_matrix.push_back(row);
-    } else {
-        throw std::runtime_error("numero de valores inesperados");
-    }
-        
-  }
-
-  for (size_t i = 0; i < sos_matrix.size(); ++i) {
-      for (size_t j = 0; j < 3; ++j) {
-            sos_matrix[i][j] *= gain;
-      }
+    }   
   }
     
   return sos_matrix;

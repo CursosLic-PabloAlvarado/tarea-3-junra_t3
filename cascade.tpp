@@ -6,7 +6,7 @@ cascade<N>::~cascade(){}
 
 template<unsigned int N>
 template<unsigned int I>
-inline typename cascade<N>::sample_t cascade<N>::process(const sample_t in){
+inline __attribute__((always_inline)) typename cascade<N>::sample_t cascade<N>::process(const sample_t in){
     if constexpr (I < N){
         return process<I+1>(biquads[I].process(in));
     }else{
