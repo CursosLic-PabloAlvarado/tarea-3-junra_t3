@@ -60,7 +60,7 @@ class filter_client : public jack::client {
     ~filter_client();
 
     /**
-     * Passthrough functionality
+     * Filter functionality
      */
     virtual bool process(jack_nframes_t nframes,
                         const sample_t *const in,

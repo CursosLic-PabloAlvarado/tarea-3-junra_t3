@@ -55,16 +55,14 @@ save("butter_lowpass.mat", "SOS");
 SOS = tf2sos(b, a);
 save("butter_highpass.mat", "SOS");
 
-
 [b,a]=butter ( 3, [f_Fpb_i, f_Fpb_s]/Fs2, 'bandpass');# Band Pass Filter
-
 SOS = tf2sos(b, a);
 save("butter_bandpass.mat", "SOS");
 
 [b,a]=butter ( 3, [f_Fsb_i, f_Fsb_s]/Fs2, 'stop');# Band Reject Reject
-[b,a]=butter ( 3, [f_Fsb_i/Fs2, f_Fsb_s/Fs2], 'stop');# Band Reject Reject
 SOS = tf2sos(b, a);
 save("butter_bandstop.mat", "SOS");
+
 
 # cheby1
 # Low Pass Filter

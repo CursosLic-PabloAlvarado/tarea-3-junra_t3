@@ -23,18 +23,21 @@
 ## Created: 2024-09-21
 
 function retval = viewfreqresp (filename, sample_freq=48000)
+  # Carga la informacion y recupera el filtro
   Data = load(filename, "SOS");
   [b,a] = sos2tf(Data.SOS);
 
-  w = linspace(1, sample_freq/2, 512)./sample_freq; # eje x
-  H = zeros(1, length(w)); # inicializa el vector de respuesta
-  angles = zeros(1, length(w));
+  w = linspace(1, sample_freq/2, 512)./sample_freq; # Eje x
+  H = zeros(1, length(w)); # Inicializa el vector de respuesta
+  angles = zeros(1, length(w)); # Inicializa el vector de angulos
 
+  # Genera la respuesta en frecuencia
   numerator = polyval(flip(b), exp(-1i * w));
   denominator = polyval(flip(a), exp(-1i * w));
 
   H = numerator ./ denominator;
 
+  # Calcula los angulos
   for k= 1:length(H)
     if angle(H(k)) > 0
       angles(k) = angle(H(k))* 180/pi - 360;
@@ -43,6 +46,7 @@ function retval = viewfreqresp (filename, sample_freq=48000)
     endif
   endfor
 
+  # Grafica la respuesta en magnitud
   figure(1)
   subplot(2, 1, 1);
   semilogx(w.*sample_freq, 20*log10(abs(H)));
@@ -58,6 +62,7 @@ function retval = viewfreqresp (filename, sample_freq=48000)
   xlabel('F');
   ylabel('\angle H(F) [\deg]');
 
+  # Grafica el diagrama de polos
   figure(2)
   zplane(b,a)
   title('Diagrama de Polos')

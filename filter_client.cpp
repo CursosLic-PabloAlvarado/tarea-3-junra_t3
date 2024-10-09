@@ -64,7 +64,10 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sa
   	const sample_t *const end_ptr = in+nframes;
 	const sample_t *ptr = in;
 	sample_t *optr = out;
-
+	
+	/**
+	 * Cascade Funcionality
+	 */
 	if (*dir == 'c'){
 		switch (filter_type){
 			case TWO:
@@ -84,7 +87,9 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sa
 				break;
 		}
 		
-		
+	/**
+	 * Biquad Funcionality
+	 */
 	} else if (*dir == 'p'){
 		while(ptr != end_ptr){
 			*optr++ = prueba.process(*ptr++);
@@ -94,6 +99,9 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t *const in, sa
 }
 
 bool filter_client::set(std::vector<std::array<sample_t, 6>> &coefficients){
+	/**
+	 * Search the order of the cascade
+	 */
 	if (coefficients.size() == 2){
 		filter_type = TWO;
 		cascade_single.set_biquads(coefficients);

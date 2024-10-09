@@ -24,19 +24,26 @@
 
 function listen_filter(filter_file, audio_file, fs_target = 48000)
 
+    # Carga el archivo.mat
     data = load(filter_file, "SOS");
 
+    # Recostruye el filtro de grado 3
     [b, a] = sos2tf(data.SOS);
 
+    # Carga el audio
     [y, fs_audio] = audioread(audio_file);
 
+    # Revisa si la frecuencia de muestreo del audio, es igual a la frecuencia que se quiere.
+    # Si no son iguales, modifica la frecuencia de muestreo a la frecuenciaq que se quiere.
     if fs_audio ~= fs_target
         y = resample(y, fs_target, fs_audio);
         fs_audio = fs_target;
     end
 
+    # Aplica el filtro
     y_filtered = filter(b, a, y);
 
+    # Hace sonar el audio filtrado
     sound(y_filtered, fs_target);
 
     # pkg load signal;
