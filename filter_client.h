@@ -60,12 +60,20 @@ class filter_client : public jack::client {
     ~filter_client();
 
     /**
-     * Filter functionality
-     */
+		 * Functionality
+		 * @param nframes amount of frames of audio per cycle
+		 * @param in pointer to the input buffer
+		 * @param out pointer to the saudio output buffer
+		 */
     virtual bool process(jack_nframes_t nframes,
                         const sample_t *const in,
                         sample_t *const out) override;
-                        
+
+
+    /**
+     * Sets coefficients to both cascade members
+     * @param coefficients matrix of coefficeints that are passed to cascade
+     * */                    
     bool set(std::vector<std::array<sample_t, 6>> &coefficients);
     
   private:

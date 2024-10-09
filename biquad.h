@@ -20,8 +20,17 @@ class biquad {
         biquad();
 
         ~biquad();
-
+        
+        /**
+         * Sets the second order filter coefficients
+         * @param coefs array of coefficients read from .mat file
+         */
         void set_coefficients(const std::array<sample_t, 6>& coeffs);
+
+        /**
+         * processes the audio data according to the difference equation
+         * @param in audio data
+         */
         inline __attribute__((always_inline)) sample_t process(const sample_t in){
             sample_t output = (b0*in + b1*x1 + b2*x2 - a1*y1 - a2*y2)/a0;
             x2 = x1;
