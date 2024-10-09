@@ -1,14 +1,8 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=16007378&assignment_repo_type=AssignmentRepo)
-# Ejemplo base de Jack en C++
+# Ejemplo filtros de Jack en C++
 
-Este ejemplo construye una aplicación muy sencilla de "pass-through"
-usando Jack, como punto de partida para los proyectos y tareas del
-curso.
-
-Esta versión permite recibir una lista de archivos .wav, que se ejecutan
-uno tras otro, reemplazando la entrada de micrófono en tanto hayan datos
-de los archivos disponibles.  Una vez que todos los archivos terminan de
-ejecutarse, regresa al modo "pass-through".
+Este ejemplo construye una aplicación que utiliza Jack y filtros generados 
+en Octave, para filtrar el audio en tiempo real.
 
 ## Dependencias
 
@@ -16,13 +10,21 @@ Requiere C++ en su estándar del 2020 (g++ 12, clang 14).
 
 En derivados de debian (ubuntu, etc):
 
-     sudo apt install jackd2 libjack-jackd2-dev qjackctl build-essential meson ninja-build jack-tools libsndfile1-dev libsndfile1 libboost-all-dev 
+     sudo apt install jackd2 libjack-jackd2-dev qjackctl build-essential meson ninja-build jack-tools libsndfile1-dev libsndfile1 libboost-all-dev libbenchmark-dev
      
 Jack requiere que su usuario pertenezca al grupo audio, o de otro modo
 no tendrá privilegios para el procesamiento demandante en tiempo
 real...
 
      sudo usermod -aG audio <su usuario>
+
+Tambien requiere Octave y el paquete signal.
+
+## Generacion de filtros por Octave
+
+Para construir los filtros la primera vez utilice en Octave
+
+     design_filters
 
 ## Construcción
 
@@ -42,6 +44,21 @@ Si requiere reconstruir todo, utilice
 o si solo requiere reconfigurar por haber agregado otro archivo:
 
     meson --reconfigure builddir
+
+## Benckmark
+
+Para medir el desempeño de la funcion concreta, lo mejor es usar herramientas de
+benchmarking, como Google Benchmark. Se puede agregar un benchmark.cpp con la prueba,
+como el incluido en la solucion. Para optimizar el codigo a velocidad y construir todo,
+se usa lo siguiente
+
+     meson setup debugoptimized --buildtype=debugoptimized --optimization=3
+     cd debugoptimized
+     ninja benchmark_tarea3
+
+Para compilar la prueba se usa
+
+     ./benchmark_tarea3
 
 ## Latencia y tamaño de bloque
 
